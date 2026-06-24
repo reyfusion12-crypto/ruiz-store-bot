@@ -3,154 +3,106 @@ import asyncpg
 
 pool = None
 
+
 async def connect_db():
-global pool
+    global pool
 
-```
-pool = await asyncpg.create_pool(
-    os.getenv("DATABASE_URL")
-)
-
-async with pool.acquire() as conn:
-
-    # Usuarios
-    await conn.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id BIGINT PRIMARY KEY,
-        username TEXT,
-        full_name TEXT,
-        balance NUMERIC DEFAULT 0,
-        created_at TIMESTAMP DEFAULT NOW()
+    pool = await asyncpg.create_pool(
+        os.getenv("DATABASE_URL")
     )
-    """)
 
-    # Productos
-    await conn.execute("""
-    CREATE TABLE IF NOT EXISTS products(
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        description TEXT,
-        price NUMERIC NOT NULL,
-        active BOOLEAN DEFAULT TRUE
-    )
-    """)
+    async with pool.acquire() as conn:
 
-    # Pedidos
-    await conn.execute("""
-    CREATE TABLE IF NOT EXISTS orders(
-        id SERIAL PRIMARY KEY,
-        user_id BIGINT,
-        product_id INTEGER,
-        status TEXT DEFAULT 'PENDING',
-        delivery_data TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-    )
-    """)
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id BIGINT PRIMARY KEY,
+            username TEXT,
+            full_name TEXT,
+            balance NUMERIC DEFAULT 0,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+        """)
 
-    # Recargas
-    await conn.execute("""
-    CREATE TABLE IF NOT EXISTS deposits(
-        id SERIAL PRIMARY KEY,
-        user_id BIGINT,
-        amount NUMERIC,
-        method TEXT,
-        status TEXT DEFAULT 'PENDING',
-        photo_id TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-    )
-    """)
-```
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS products(
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            price NUMERIC NOT NULL,
+            active BOOLEAN DEFAULT TRUE
+        )
+        """)
+
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS orders(
+            id SERIAL PRIMARY KEY,
+            user_id BIGINT,
+            product_id INTEGER,
+            status TEXT DEFAULT 'PENDING',
+            delivery_data TEXT,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+        """)
+
+        await conn.execute("""
+        CREATE TABLE IF NOT EXISTS deposits(
+            id SERIAL PRIMARY KEY,
+            user_id BIGINT,
+            amount NUMERIC,
+            method TEXT,
+            status TEXT DEFAULT 'PENDING',
+            photo_id TEXT,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+        """)
+
 
 async def create_user(user_id, username, full_name):
+    async with pool.acquire() as conn:
+        await conn.execute("""
+        INSERT INTO users(id, username, full_name)
+        VALUES($1, $2, $3)
+        ON CONFLICT(id) DO NOTHING
+        """, user_id, username, full_name)
 
-```
-async with pool.acquire() as conn:
-
-    await conn.execute("""
-    INSERT INTO users(
-        id,
-        username,
-        full_name
-    )
-    VALUES($1,$2,$3)
-    ON CONFLICT(id)
-    DO NOTHING
-    """,
-    user_id,
-    username,
-    full_name
-    )
-```
 
 async def get_user(user_id):
+    async with pool.acquire() as conn:
+        return await conn.fetchrow(
+            "SELECT * FROM users WHERE id=$1",
+            user_id
+        )
 
-```
-async with pool.acquire() as conn:
-
-    return await conn.fetchrow(
-        "SELECT * FROM users WHERE id=$1",
-        user_id
-    )
-```
 
 async def update_balance(user_id, amount):
+    async with pool.acquire() as conn:
+        await conn.execute("""
+        UPDATE users
+        SET balance = balance + $1
+        WHERE id = $2
+        """, amount, user_id)
 
-```
-async with pool.acquire() as conn:
 
-    await conn.execute("""
-    UPDATE users
-    SET balance = balance + $1
-    WHERE id = $2
-    """,
-    amount,
-    user_id
+async def create_product(name, description, price):
+    async with pool.acquire() as conn:
+        await conn.execute("""
+        INSERT INTO products(name, description, price)
+        VALUES($1, $2, $3)
+        """, name, description, price)
 
-                       async def create_product(
-name,
-description,
-price
-):
-async with pool.acquire() as conn:
-
-```
-    await conn.execute("""
-    INSERT INTO products(
-        name,
-        description,
-        price
-    )
-    VALUES($1,$2,$3)
-    """,
-    name,
-    description,
-    price
-    )
-```
 
 async def get_products():
+    async with pool.acquire() as conn:
+        return await conn.fetch("""
+        SELECT *
+        FROM products
+        WHERE active = TRUE
+        ORDER BY id
+        """)
 
-```
-async with pool.acquire() as conn:
 
-    return await conn.fetch("""
-    SELECT *
-    FROM products
-    WHERE active = TRUE
-    ORDER BY id
-    """)
-```
 async def get_product_count():
-
-```
-async with pool.acquire() as conn:
-
-    result = await conn.fetchval(
-        "SELECT COUNT(*) FROM products"
-    )
-
-    return result
-```
-
-    )
-```
+    async with pool.acquire() as conn:
+        return await conn.fetchval(
+            "SELECT COUNT(*) FROM products"
+        )
