@@ -1,6 +1,7 @@
 import os
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
+ADMINS = [5329713401]
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-ADMINS = [5329713401]
+
