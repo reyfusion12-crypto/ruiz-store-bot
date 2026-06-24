@@ -7,7 +7,7 @@ from db import connect_db, create_user, get_user
 from keyboards import main_menu
 
 # 🔐 TOKEN DIRECTO EN CÓDIGO
-BOT_TOKEN = "PEGA_AQUI_TU_TOKEN"
+BOT_TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
 
 if not BOT_TOKEN or ":" not in BOT_TOKEN:
     raise Exception("❌ Token inválido")
