@@ -10,9 +10,10 @@ KeyboardButton
 )
 ADMINS = [5329713401]
 from db import (
-connect_db,
-create_user,
-get_user
+    connect_db,
+    create_user,
+    get_user,
+    get_product_count
 )
 
 TOKEN = os.getenv("BOT_TOKEN")
