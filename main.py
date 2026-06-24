@@ -3,9 +3,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from config import BOT_TOKEN, ADMINS
 from db import connect_db, create_user, get_user
 from keyboards import main_menu
+
+# 🔐 TOKEN DIRECTO EN CÓDIGO
+BOT_TOKEN = "PEGA_AQUI_TU_TOKEN"
+
+if not BOT_TOKEN or ":" not in BOT_TOKEN:
+    raise Exception("❌ Token inválido")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -31,6 +36,9 @@ async def start(message: Message):
 @dp.message()
 async def handler(message: Message):
 
+    if not message.text:
+        return
+
     if message.text == "👤 Perfil":
         user = await get_user(message.from_user.id)
 
@@ -51,7 +59,7 @@ async def handler(message: Message):
 
 async def main():
     await connect_db()
-    print("Bot iniciado")
+    print("✅ Bot iniciado correctamente")
     await dp.start_polling(bot)
 
 
