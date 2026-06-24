@@ -3,15 +3,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
+from config import BOT_TOKEN
 from db import connect_db, create_user, get_user
 from keyboards import main_menu
-
-# 🔐 TOKEN DIRECTO EN CÓDIGO
-BOT_TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
-DATABASE_URL = postgresql://postgres:YTlrNsmmSAGcZOqZMjlyMGLtIMzEntva@reseau.proxy.rlwy.net:29268/railway
-
-if not BOT_TOKEN or ":" not in BOT_TOKEN:
-    raise Exception("❌ Token inválido")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -37,12 +31,9 @@ async def start(message: Message):
 @dp.message()
 async def handler(message: Message):
 
-    if not message.text:
-        return
+    user = await get_user(message.from_user.id)
 
     if message.text == "👤 Perfil":
-        user = await get_user(message.from_user.id)
-
         await message.answer(
             f"👤 Perfil\n\nID: {user['id']}\nSaldo: {user['balance']}"
         )
@@ -54,13 +45,12 @@ async def handler(message: Message):
         await message.answer("Tienda en construcción.")
 
     elif message.text == "💰 Billetera":
-        user = await get_user(message.from_user.id)
         await message.answer(f"Saldo: {user['balance']}")
 
 
 async def main():
     await connect_db()
-    print("✅ Bot iniciado correctamente")
+    print("Bot iniciado")
     await dp.start_polling(bot)
 
 
