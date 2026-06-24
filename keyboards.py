@@ -2,18 +2,10 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [
-            KeyboardButton(text="🛒 Tienda"),
-            KeyboardButton(text="💰 Billetera")
-        ],
-        [
-            KeyboardButton(text="💳 Recargar"),
-            KeyboardButton(text="📦 Mis Pedidos")
-        ],
-        [
-            KeyboardButton(text="👤 Perfil"),
-            KeyboardButton(text="📞 Soporte")
-        ]
+        [KeyboardButton(text="👤 Perfil")],
+        [KeyboardButton(text="🛒 Tienda")],
+        [KeyboardButton(text="💳 Recargar")],
+        [KeyboardButton(text="💰 Billetera")]
     ],
     resize_keyboard=True
 )
