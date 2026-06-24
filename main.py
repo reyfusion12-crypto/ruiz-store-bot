@@ -8,7 +8,7 @@ Message,
 ReplyKeyboardMarkup,
 KeyboardButton
 )
-
+ADMINS = [5329713401]
 from db import (
 connect_db,
 create_user,
