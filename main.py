@@ -2,21 +2,23 @@ import asyncio
 import os
 
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import (
 Message,
 ReplyKeyboardMarkup,
 KeyboardButton
 )
-ADMINS = [5329713401]
+
 from db import (
-    connect_db,
-    create_user,
-    get_user,
-    get_product_count
+connect_db,
+create_user,
+get_user,
+get_product_count
 )
 
 TOKEN = os.getenv("BOT_TOKEN")
+
+ADMINS = [5329713401]
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -56,10 +58,33 @@ user = await get_user(
 balance = user["balance"]
 
 await message.answer(
-    f"🛒 Bienvenido a Ruiz Store\n\n"
+    f"🛒 Bienvenido a Severino Store\n\n"
     f"💰 Saldo actual: ${balance}\n\n"
     f"Selecciona una opción:",
     reply_markup=main_menu
+)
+```
+
+@dp.message(Command("admin"))
+async def admin_panel(message: Message):
+
+```
+if message.from_user.id not in ADMINS:
+    await message.answer(
+        "⛔ No tienes acceso a este panel."
+    )
+    return
+
+total_products = await get_product_count()
+
+await message.answer(
+    "🛠 Panel Severino Store\n\n"
+    f"📦 Productos registrados: {total_products}\n\n"
+    "Opciones disponibles:\n"
+    "➕ Agregar Producto\n"
+    "📦 Ver Productos\n"
+    "💰 Ver Recargas\n"
+    "📊 Estadísticas"
 )
 ```
 
@@ -84,12 +109,12 @@ elif message.text == "💳 Recargar":
 
     await message.answer(
         "💳 Métodos de pago\n\n"
-        "Binance\n"
-        "UID: 123456789\n\n"
-        "Transferencia\n"
-        "Banco Banreservas\n"
-        "Cuenta: XXXXXXXX\n"
-        "Titular: Moises Ruiz"
+        "🟡 Binance\n"
+        "UID: 584886173\n\n"
+        "🏦 Banreservas\n"
+        "Tipo: Cuenta de Ahorros\n"
+        "Cuenta: 9604451937\n\n"
+        "📸 Después de realizar el pago envía el comprobante."
     )
 
 elif message.text == "🛒 Tienda":
@@ -119,7 +144,7 @@ elif message.text == "📦 Mis Pedidos":
 elif message.text == "📞 Soporte":
 
     await message.answer(
-        "📞 Soporte Ruiz Store\n\n"
+        "📞 Soporte Severino Store\n\n"
         "Contacta al administrador."
     )
 ```
@@ -128,6 +153,8 @@ async def main():
 
 ```
 await connect_db()
+
+print("✅ Severino Store iniciada")
 
 await dp.start_polling(bot)
 ```
