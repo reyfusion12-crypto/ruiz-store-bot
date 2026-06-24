@@ -1,97 +1,135 @@
 import asyncio
+import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import (
-    Message,
-    ReplyKeyboardMarkup,
-    KeyboardButton
+Message,
+ReplyKeyboardMarkup,
+KeyboardButton
 )
 
-TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
+from db import (
+connect_db,
+create_user,
+get_user
+)
 
+TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-
 main_menu = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text="🛒 Tienda"),
-            KeyboardButton(text="💰 Billetera")
-        ],
-        [
-            KeyboardButton(text="💳 Recargar"),
-            KeyboardButton(text="📦 Mis Pedidos")
-        ],
-        [
-            KeyboardButton(text="👤 Perfil"),
-            KeyboardButton(text="📞 Soporte")
-        ]
-    ],
-    resize_keyboard=True
+keyboard=[
+[
+KeyboardButton(text="🛒 Tienda"),
+KeyboardButton(text="💰 Billetera")
+],
+[
+KeyboardButton(text="💳 Recargar"),
+KeyboardButton(text="📦 Mis Pedidos")
+],
+[
+KeyboardButton(text="👤 Perfil"),
+KeyboardButton(text="📞 Soporte")
+]
+],
+resize_keyboard=True
 )
-
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    await message.answer(
-        "🛒 Bienvenido a Ruiz Store\n\n"
-        "Tu tienda de servicios digitales.\n\n"
-        "Selecciona una opción:",
-        reply_markup=main_menu
-    )
 
+```
+await create_user(
+    message.from_user.id,
+    message.from_user.username,
+    message.from_user.full_name
+)
+
+user = await get_user(
+    message.from_user.id
+)
+
+balance = user["balance"]
+
+await message.answer(
+    f"🛒 Bienvenido a Ruiz Store\n\n"
+    f"💰 Saldo actual: ${balance}\n\n"
+    f"Selecciona una opción:",
+    reply_markup=main_menu
+)
+```
 
 @dp.message()
 async def menu_handler(message: Message):
 
-    if message.text == "👤 Perfil":
-        await message.answer(
-            f"👤 Usuario: @{message.from_user.username}\n"
-            f"🆔 ID: {message.from_user.id}\n"
-            f"💰 Saldo: $0"
-        )
+```
+if message.text == "👤 Perfil":
 
-    elif message.text == "📞 Soporte":
-        await message.answer(
-            "📞 Soporte Ruiz Store\n\n"
-            "Escribe directamente al administrador."
-        )
+    user = await get_user(
+        message.from_user.id
+    )
 
-    elif message.text == "💳 Recargar":
-        await message.answer(
-            "💳 Métodos de pago\n\n"
-            "Binance\n"
-            "UID: 584886173\n\n"
-            "Transferencia\n"
-            "Banco Banreservas\n"
-            "Cuenta: 9604451937\n"
-            "Titular: Moises Ruiz"
-        )
+    await message.answer(
+        f"👤 Perfil\n\n"
+        f"🆔 ID: {user['id']}\n"
+        f"👤 Nombre: {user['full_name']}\n"
+        f"💰 Saldo: ${user['balance']}"
+    )
 
-    elif message.text == "🛒 Tienda":
-        await message.answer(
-            "🛒 Productos disponibles\n\n"
-            "1. ChatGPT Plus - $8\n"
-            "2. Canva Pro - $5"
-        )
+elif message.text == "💳 Recargar":
 
-    elif message.text == "💰 Billetera":
-        await message.answer(
-            "💰 Saldo actual\n\n$0 USD"
-        )
+    await message.answer(
+        "💳 Métodos de pago\n\n"
+        "Binance\n"
+        "UID: 123456789\n\n"
+        "Transferencia\n"
+        "Banco Banreservas\n"
+        "Cuenta: XXXXXXXX\n"
+        "Titular: Moises Ruiz"
+    )
 
-    elif message.text == "📦 Mis Pedidos":
-        await message.answer(
-            "📦 No tienes pedidos todavía."
-        )
+elif message.text == "🛒 Tienda":
 
+    await message.answer(
+        "🛒 Tienda\n\n"
+        "Próximamente productos reales."
+    )
+
+elif message.text == "💰 Billetera":
+
+    user = await get_user(
+        message.from_user.id
+    )
+
+    await message.answer(
+        f"💰 Saldo disponible\n\n"
+        f"${user['balance']}"
+    )
+
+elif message.text == "📦 Mis Pedidos":
+
+    await message.answer(
+        "📦 No tienes pedidos todavía."
+    )
+
+elif message.text == "📞 Soporte":
+
+    await message.answer(
+        "📞 Soporte Ruiz Store\n\n"
+        "Contacta al administrador."
+    )
+```
 
 async def main():
-    await dp.start_polling(bot)
 
+```
+await connect_db()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+await dp.start_polling(bot)
+```
+
+if **name** == "**main**":
+asyncio.run(main())
