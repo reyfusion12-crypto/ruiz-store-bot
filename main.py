@@ -16,7 +16,7 @@ from db import (
     get_product_count
 )
 
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
 
 ADMINS = [5329713401]
 
