@@ -140,6 +140,17 @@ async with pool.acquire() as conn:
     ORDER BY id
     """)
 ```
+async def get_product_count():
+
+```
+async with pool.acquire() as conn:
+
+    result = await conn.fetchval(
+        "SELECT COUNT(*) FROM products"
+    )
+
+    return result
+```
 
     )
 ```
