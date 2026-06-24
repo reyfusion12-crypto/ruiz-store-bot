@@ -8,7 +8,7 @@ from keyboards import main_menu
 
 # 🔐 TOKEN DIRECTO EN CÓDIGO
 BOT_TOKEN = "8678993710:AAFf84KlsCTbiKd_pVbNbw5NexGxER3sfhc"
-postgresql://postgres:YTlrNsmmSAGcZOqZMjlyMGLtIMzEntva@reseau.proxy.rlwy.net:29268/railway
+DATABASE_URL = postgresql://postgres:YTlrNsmmSAGcZOqZMjlyMGLtIMzEntva@reseau.proxy.rlwy.net:29268/railway
 
 if not BOT_TOKEN or ":" not in BOT_TOKEN:
     raise Exception("❌ Token inválido")
