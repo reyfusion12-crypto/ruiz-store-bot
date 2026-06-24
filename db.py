@@ -105,5 +105,41 @@ async with pool.acquire() as conn:
     """,
     amount,
     user_id
+
+                       async def create_product(
+name,
+description,
+price
+):
+async with pool.acquire() as conn:
+
+```
+    await conn.execute("""
+    INSERT INTO products(
+        name,
+        description,
+        price
+    )
+    VALUES($1,$2,$3)
+    """,
+    name,
+    description,
+    price
+    )
+```
+
+async def get_products():
+
+```
+async with pool.acquire() as conn:
+
+    return await conn.fetch("""
+    SELECT *
+    FROM products
+    WHERE active = TRUE
+    ORDER BY id
+    """)
+```
+
     )
 ```
